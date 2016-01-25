@@ -1,55 +1,67 @@
-#What is mean total number of steps taken per day? 
-For this question, missing values in the dataset are ignored.
+---
+title: "PA1_Template"
+author: "SCarter"
+date: "January 24, 2016"
+output: html_document
+---
 
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+summary(cars)
 ```
 
-#Set work directory
-path_mydir = "C:/Users/Suzanne/Documents/AAAAAA_SUZ FOLDERS/CAREER/suz_Data Science Coursera/Reproducible Research/RepData_PeerAssessment1"
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
 ```
 
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 ```
-
 #bring packages into session.
 
-install.packages("ggplot2")
-install.packages("knitr")      
-install.packages("scales")      
-install.packages("ggthemes", dependencies = TRUE)
-install.packages(plyr)
+install.packages("ggplot2",dependencies = TRUE, repos = "http://cran.us.r-project.org")
+install.packages("knitr",dependencies = TRUE, repos = "http://cran.us.r-project.org")      
+install.packages("ggthemes",dependencies = TRUE, repos = "http://cran.us.r-project.org")
+install.packages("plyr",dependencies = TRUE, repos = "http://cran.us.r-project.org")
 
 library(ggplot2)
 library(knitr)
-library(scales)
 library(ggthemes)
 library(plyr)
 ```
 
-```
+```{r, echo=TRUE, eval=TRUE}
 #unzip and read the provided dataset:
 
 data <- read.csv(unz("activity.zip", "activity.csv"), colClasses = c("numeric", "Date", "numeric"))
 ```
 
-```
+
+#What is mean total number of steps taken per day?
+For this question, missing values in the dataset are ignored.
+
+
+```{r, echo=TRUE, eval=TRUE}
 #Calculate total number of steps per day.
 daily <- aggregate(steps ~ date, data=data, FUN=sum)
 ```
 
 
-
-```
+```{r histtot, echo=TRUE, eval = TRUE, fig.width=5, fig.height=5}
 #Create histogram of total number of steps per day.
 hist(daily$steps, border = "blue", col = "white", ylim=c(0,50), main="Histogram of total number of steps/day",     
-     xlab="Total number of steps/day")     
+     xlab="Total number of steps/day")    
 ```
 
-
-```
+```{r, echo=TRUE, eval=FALSE}
 #Calculate mean and median number of steps per day.
 mean(daily$steps)
 median(daily$steps)
-
 # mean(daily$steps)
 #  [1] 10766.19
 # median(daily$steps)
@@ -58,15 +70,17 @@ median(daily$steps)
 ```
 
 
-
 #What is the average daily activity pattern?
 
-```
+```{r, echo=TRUE, eval=FALSE}
 #Create time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
-
 
 intervalsteps = ddply(data, .(interval), summarize, 
                       meansteps = mean(steps, na.rm = TRUE))
+```
+
+
+```{r ggplotint, echo=TRUE, eval = FALSE, fig.width=4, fig.height=3}
 ggplot( intervalsteps, aes(x=interval, y=meansteps)) + geom_line() +
   theme_few() + 
   guides(fill=FALSE)+
@@ -74,20 +88,20 @@ ggplot( intervalsteps, aes(x=interval, y=meansteps)) + geom_line() +
   ylab( "Average Number of Steps") +
   ggtitle( "Average Number of Steps by Time of Day") + 
   theme(plot.title = element_text(size = rel(1.75)))
+```
 
+
+```{r, echo=TRUE, eval=FALSE}
 intervalmax = intervalsteps$interval[which.max(intervalsteps$meansteps)]  
 intervalmax
 
 # intervalmax
 #  [1] 835    
-
 ```
 
-
-```
 #Imputing missing values
 
-
+```{r, echo=TRUE, eval=FALSE}
 #Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 #Create boolean array to identify NAs.  
 #Total up the number of TRUEs (Identified NAs).
@@ -96,28 +110,32 @@ na_ID = is.na(data$steps)
 sum(na_ID)
 ```
 
-
-```
+```{r, echo=TRUE, eval=FALSE}
 #Replace NA with mean of 5-minute interval (already computed).  
 
 sapply(split(data, data$date), function(x) sum(is.na(x$steps)))
 ```
 
-
-```
+```{r, echo=TRUE, eval=FALSE}
 #Create a new dataset that is equal to the original dataset (data) but with the missing data filled in (imputed).
 
 imputed <- data
 imputed[na_ID, "steps"] <- rep(daily2$steps, length.out = nrow(data))[na_ID]
+```
 
-
+```{r, echo=TRUE, eval=FALSE}
 #Calculate total number of steps per day.
 daily_imputed <- aggregate(steps ~ date, data=imputed, FUN=sum)
+```
 
+```{r histtotimput, echo=TRUE, eval = FALSE, fig.width=4, fig.height=3}
 #Create histogram of total number of steps per day.
 hist(daily$steps, border = "blue", col = "white", ylim=c(0,50), main="Histogram of total number of steps/day - imputed data",     
      xlab="Total number of steps/day - imputed data")     
+```
 
+
+```{r, echo=TRUE, eval=FALSE}
 #Calculate mean and median number of steps per day.
 mean(daily$steps)
 median(daily$steps)
@@ -129,6 +147,7 @@ median(daily$steps)
 # median(daily$steps)
 #[1] 10765
 
+
 #Do these values differ from the estimates from the first part of the assignment? 
 #No.
 
@@ -139,14 +158,10 @@ median(daily$steps)
 #2. the MEDIAN value (the "middle" value) would get closer to the mean
 ```
 
-
-
-
-
 #Are there differences in activity patterns between weekdays and weekends?
 Imputed dataset to be used.
 
-```
+```{r, echo=TRUE, eval=FALSE}
 #Create a new factor variable in the dataset with two levels - "weekday" and "weekend". 
 #This factor indicates whether a given date is a weekday or weekend day.
 
@@ -159,10 +174,11 @@ imputed$day = as.factor(imputed$day)
 stepsbyday = ddply(imputed, .(day, interval), summarize, 
                    meansteps = mean(steps, na.rm = TRUE))
 ```
-```
+
+
+```{r ggplotpanel, echo=TRUE, eval = FALSE, fig.width=4, fig.height=3}
 #Make a panel plot containing a time series plot of the 5-minute interval (x-axis) 
 #and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
-
 
 ggplot( stepsbyday, aes(x=interval, y=meansteps)) + geom_line() +
   theme_few() + 
@@ -172,6 +188,9 @@ ggplot( stepsbyday, aes(x=interval, y=meansteps)) + geom_line() +
   ggtitle("Imputed Levels: Weekends vs. Weekdays") + 
   theme(plot.title = element_text(size = rel(1.75)))
 
+```
+
+```
 #Conclusion based on plots: Yes there are differences in activity patterns.
 
 #On weekdays, there is more concentrated activity, as shown by two aspects of the chart:
@@ -179,5 +198,6 @@ ggplot( stepsbyday, aes(x=interval, y=meansteps)) + geom_line() +
 
 #On weekends, there is more activity througout the day, 
 #as evidenced by several peaks at around 150 steps taken.   
-
 ```
+
+
