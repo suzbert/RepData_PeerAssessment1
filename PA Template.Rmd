@@ -35,7 +35,7 @@ library(ggthemes)
 library(plyr)
 ```
 
-```{r, echo=TRUE, eval=TRUE}
+```{r, echo=TRUE, eval=FALSE}
 #unzip and read the provided dataset:
 
 data <- read.csv(unz("activity.zip", "activity.csv"), colClasses = c("numeric", "Date", "numeric"))
@@ -46,13 +46,13 @@ data <- read.csv(unz("activity.zip", "activity.csv"), colClasses = c("numeric", 
 For this question, missing values in the dataset are ignored.
 
 
-```{r, echo=TRUE, eval=TRUE}
+```{r, echo=TRUE, eval=FALSE}
 #Calculate total number of steps per day.
 daily <- aggregate(steps ~ date, data=data, FUN=sum)
 ```
 
 
-```{r histtot, echo=TRUE, eval = TRUE, fig.width=5, fig.height=5}
+```{r histtot, echo=TRUE, eval = FALSE, fig.width=5, fig.height=5}
 #Create histogram of total number of steps per day.
 hist(daily$steps, border = "blue", col = "white", ylim=c(0,50), main="Histogram of total number of steps/day",     
      xlab="Total number of steps/day")    
@@ -80,7 +80,7 @@ intervalsteps = ddply(data, .(interval), summarize,
 ```
 
 
-```{r ggplotint, echo=TRUE, eval = FALSE, fig.width=4, fig.height=3}
+```{r ggplotint, echo=TRUE, eval = FALSE, fig.width=5, fig.height=5}
 ggplot( intervalsteps, aes(x=interval, y=meansteps)) + geom_line() +
   theme_few() + 
   guides(fill=FALSE)+
@@ -128,7 +128,7 @@ imputed[na_ID, "steps"] <- rep(daily2$steps, length.out = nrow(data))[na_ID]
 daily_imputed <- aggregate(steps ~ date, data=imputed, FUN=sum)
 ```
 
-```{r histtotimput, echo=TRUE, eval = FALSE, fig.width=4, fig.height=3}
+```{r histtotimput, echo=TRUE, eval = FALSE, fig.width=5, fig.height=5}
 #Create histogram of total number of steps per day.
 hist(daily$steps, border = "blue", col = "white", ylim=c(0,50), main="Histogram of total number of steps/day - imputed data",     
      xlab="Total number of steps/day - imputed data")     
@@ -176,7 +176,7 @@ stepsbyday = ddply(imputed, .(day, interval), summarize,
 ```
 
 
-```{r ggplotpanel, echo=TRUE, eval = FALSE, fig.width=4, fig.height=3}
+```{r ggplotpanel, echo=TRUE, eval = FALSE, fig.width=5, fig.height=5}
 #Make a panel plot containing a time series plot of the 5-minute interval (x-axis) 
 #and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 
